@@ -37,6 +37,8 @@ src/
    │  ├─ RegistryWithMockTest.java
    │  └─ AppTest.java
    └─ resources/
+
+aca se puede evidenciar codigo :
 ```
 
 ---
@@ -88,5 +90,6 @@ mvn test
 * **Éxitos**: 8
 * **Fallos**: 0
 * **Errores**: 0
+<img width="1523" height="824" alt="Captura de pantalla 2025-11-16 185243" src="https://github.com/user-attachments/assets/9b7f184f-040e-4281-b683-07e78e3f64a5" />
 
 ---
