@@ -10,6 +10,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
 /**
  * Pruebas de integración para el caso de uso {@link Registry}, aplicando el formato AAA:
@@ -87,4 +89,65 @@ public class RegistryTest {
         // Assert segundo registro
         assertEquals(RegisterResult.DUPLICATED, result2);
     }
+
+    //test menor de edad 
+    @Test
+    public void shouldRejectUnderagePerson() throws Exception {
+        // Arrange
+        Person minor = new Person("Luis", 102, 16, Gender.MALE, true);
+
+        // Act
+        RegisterResult result = registry.registerVoter(minor);
+
+        // Assert
+        assertEquals(RegisterResult.UNDERAGE, result);
+        assertFalse(repo.existsById(102));
+   }
+
+   //test persona fallecida 
+   @Test
+    public void shouldRejectDeceasedPerson() throws Exception {
+        // Arrange
+        Person deceased = new Person("Maria", 103, 45, Gender.FEMALE, false);
+
+        // Act
+        RegisterResult result = registry.registerVoter(deceased);
+
+        // Assert
+        assertEquals(RegisterResult.DEAD, result);
+        assertFalse(repo.existsById(103));
+    }
+
+    //test ID invalido
+    @Test
+    public void shouldRejectInvalidIdPerson() throws Exception {
+        // Arrange
+        Person invalid = new Person("Pedro", -1, 30, Gender.MALE, true); // ID negativo
+
+        // Act
+        RegisterResult result = registry.registerVoter(invalid);
+
+        // Assert
+        assertEquals(RegisterResult.INVALID, result);
+        assertFalse(repo.existsById(-1));
+    }
+
+    //simular error de conexion H2
+@Test
+public void shouldHandleDatabaseConnectionError() throws Exception {
+    RegistryRepositoryPort faultyRepo = mock(RegistryRepositoryPort.class);
+    doThrow(new RuntimeException("Connection failed")).when(faultyRepo).initSchema();
+
+    try {
+        faultyRepo.initSchema();
+        fail("Debería lanzar excepción de conexión");
+    } catch (Exception e) {
+        assertTrue(e.getMessage().contains("Connection"));
+    }
 }
+
+
+
+}
+ 
+
